@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="350" viewBox="0 0 960 350" font-family="'JetBrains Mono','SF Mono',Consolas,monospace">
+  <!-- Progress Head 结构修改示意（浅色版，配白底 figure） -->
+
+  <!-- 输入块 -->
+  <rect x="18" y="118" width="132" height="86" rx="4" fill="none" stroke="#a3a3a3" stroke-width="1.5"/>
+  <text x="84" y="152" text-anchor="middle" font-size="14" fill="#0a0a0a" font-weight="700">输入</text>
+  <text x="84" y="174" text-anchor="middle" font-size="11.5" fill="#525252">RGB + 文本</text>
+  <text x="84" y="191" text-anchor="middle" font-size="11.5" fill="#525252">机型 Prompt / State</text>
+
+  <!-- 箭头 输入→VLM -->
+  <line x1="150" y1="161" x2="196" y2="161" stroke="#737373" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- VLM 塔 -->
+  <rect x="200" y="60" width="168" height="204" rx="4" fill="none" stroke="#002FA7" stroke-width="2.5"/>
+  <text x="284" y="118" text-anchor="middle" font-size="15" fill="#002FA7" font-weight="700">VLM 塔</text>
+  <text x="284" y="140" text-anchor="middle" font-size="11.5" fill="#525252">PaliGEMMA prefix</text>
+  <text x="284" y="161" text-anchor="middle" font-size="11.5" fill="#525252">image tokens</text>
+  <text x="284" y="178" text-anchor="middle" font-size="11.5" fill="#525252">+ lang tokens</text>
+  <text x="284" y="238" text-anchor="middle" font-size="10.5" fill="#a3a3a3">（共享主干，不新增输入）</text>
+
+  <!-- 分支上：VLM→Expert -->
+  <line x1="368" y1="105" x2="446" y2="105" stroke="#0a0a0a" stroke-width="1.8" marker-end="url(#arb)"/>
+  <text x="407" y="92" text-anchor="middle" font-size="10.5" fill="#525252">KV · 联合注意力</text>
+
+  <!-- Action Expert -->
+  <rect x="450" y="62" width="196" height="86" rx="4" fill="none" stroke="#0a0a0a" stroke-width="2"/>
+  <text x="548" y="97" text-anchor="middle" font-size="14" fill="#0a0a0a" font-weight="700">Action Expert</text>
+  <text x="548" y="119" text-anchor="middle" font-size="11.5" fill="#525252">Flow Matching</text>
+
+  <!-- Expert→动作输出 -->
+  <line x1="646" y1="105" x2="692" y2="105" stroke="#0a0a0a" stroke-width="1.8" marker-end="url(#arb)"/>
+  <rect x="696" y="74" width="246" height="62" rx="4" fill="#f0f0ee" stroke="#0a0a0a" stroke-width="1.5"/>
+  <text x="819" y="99" text-anchor="middle" font-size="13" fill="#0a0a0a" font-weight="700">动作 chunk [B, 50]</text>
+  <text x="819" y="120" text-anchor="middle" font-size="11" fill="#525252">原有输出 · 不变</text>
+
+  <!-- 分支下：VLM→池化（虚线 detach） -->
+  <line x1="368" y1="215" x2="446" y2="215" stroke="#002FA7" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ara)"/>
+  <text x="407" y="203" text-anchor="middle" font-size="10.5" fill="#002FA7" font-weight="700">detach</text>
+  <text x="407" y="236" text-anchor="middle" font-size="10" fill="#525252">梯度隔离</text>
+
+  <!-- 语言池化节点 -->
+  <rect x="450" y="192" width="196" height="46" rx="4" fill="none" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="548" y="220" text-anchor="middle" font-size="11.5" fill="#002FA7">lang tokens 掩码池化</text>
+
+  <!-- 池化→Progress Head -->
+  <line x1="548" y1="238" x2="548" y2="264" stroke="#002FA7" stroke-width="1.8" marker-end="url(#ara)"/>
+
+  <!-- Progress Head -->
+  <rect x="450" y="268" width="196" height="58" rx="4" fill="#002FA7"/>
+  <text x="548" y="292" text-anchor="middle" font-size="14" fill="#fafaf8" font-weight="700">Progress Head ✚</text>
+  <text x="548" y="312" text-anchor="middle" font-size="11" fill="#c9d4ff">3 层 MLP · fp32 · ≈2.2M</text>
+
+  <!-- Head→四通道输出 -->
+  <line x1="646" y1="297" x2="692" y2="297" stroke="#002FA7" stroke-width="1.8" marker-end="url(#ara)"/>
+  <rect x="696" y="258" width="246" height="78" rx="4" fill="none" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="819" y="280" text-anchor="middle" font-size="12.5" fill="#002FA7" font-weight="700">progress [B, 50, 4]</text>
+  <text x="819" y="303" text-anchor="middle" font-size="10.5" fill="#525252">sub_progress · progress</text>
+  <text x="819" y="320" text-anchor="middle" font-size="10.5" fill="#525252">sub_done · done</text>
+
+  <!-- 底注 -->
+  <text x="480" y="32" text-anchor="middle" font-size="12" fill="#737373">与动作同一次前向顺带输出 —— 推理零额外成本 · 梯度只更新 Head 本身</text>
+
+  <defs>
+    <marker id="arb" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#0a0a0a"/>
+    </marker>
+    <marker id="ara" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#002FA7"/>
+    </marker>
+    <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#737373"/>
+    </marker>
+  </defs>
+</svg>
