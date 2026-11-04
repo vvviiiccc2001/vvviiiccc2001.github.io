@@ -449,8 +449,8 @@ html:not(.dark) .theme-icon{
   background:transparent;   /* 覆盖默认黑底：padding 留白区不露黑 */
 }
 .card-h .card-media video{
-  width:100%;height:auto;aspect-ratio:16/9;
-  object-fit:contain;background:#000;
+  width:100%;height:auto;aspect-ratio:4/3;   /* 视频源为 4:3 中央裁切版 */
+  object-fit:cover;background:#000;
   border:1px solid var(--grey-2);
 }
 .sac-media .phase-tracker{margin-top:10px;border:1px solid var(--grey-2)}

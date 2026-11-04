@@ -132,9 +132,26 @@
   (function () {
     var loops = Array.prototype.slice.call(document.querySelectorAll("video[autoplay]"));
 
-    /* loop 属性兜底：ended 时手动回起点续播 */
+    /* 3c. 手动模式：用户点过的视频完全交给用户控制——
+       播放调度器与 ended 循环兜底都不再干预（解决"点了不播/拖进度条被弹回"）；
+       移动端点击视频 → 原生全屏播放器（自带进度条/暂停/全屏） */
+    var isTouch = matchMedia("(pointer:coarse)").matches || "ontouchstart" in window;
+    document.querySelectorAll("video").forEach(function (v) {
+      v.addEventListener("click", function () {
+        v.setAttribute("data-user", "1");   // 进入手动模式，调度豁免
+        if (!isTouch) return;               // 桌面：只标记，不抢全屏
+        try {
+          if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();   // iOS 原生播放器
+          else if (v.requestFullscreen) v.requestFullscreen();      // Android / 触屏 Chrome
+        } catch (e) {}
+      });
+    });
+    var isManual = function (v) { return v.hasAttribute("data-user"); };
+
+    /* loop 属性兜底：ended 时手动回起点续播（手动模式视频豁免） */
     loops.forEach(function (v) {
       v.addEventListener("ended", function () {
+        if (isManual(v)) return;
         try { v.currentTime = 0; } catch (e) {}
         var p = v.play();
         if (p && p.catch) p.catch(function () {});
@@ -152,7 +169,7 @@
     var ratios = new Map();   // video -> intersectionRatio
     function schedule() {
       var visible = loops
-        .filter(function (v) { return (ratios.get(v) || 0) > 0.25; })
+        .filter(function (v) { return !isManual(v) && (ratios.get(v) || 0) > 0.25; })
         .sort(function (a, b) { return (ratios.get(b) || 0) - (ratios.get(a) || 0); });
       visible.forEach(function (v, i) {
         if (i < MAX_PLAYING) {
@@ -163,7 +180,7 @@
         }
       });
       loops.forEach(function (v) {
-        if ((ratios.get(v) || 0) <= 0.25) v.pause();
+        if ((ratios.get(v) || 0) <= 0.25 && !isManual(v)) v.pause();
       });
     }
     var io = new IntersectionObserver(function (entries) {
