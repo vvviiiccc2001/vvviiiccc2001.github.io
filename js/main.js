@@ -13,6 +13,20 @@
 (function () {
   "use strict";
 
+  /* ── 0. 深浅色主题：按钮切换 + localStorage 记忆（默认浅色）── */
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById("themeToggle");
+    try {
+      if (localStorage.getItem("theme") === "dark") root.classList.add("dark");
+    } catch (e) {}
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var dark = root.classList.toggle("dark");
+      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    });
+  })();
+
   /* ── 1. 视频自动接入（每个 video 独立检测）────────
      只有明确收到 404 才判定「文件未放」并显示占位提示；
      网络探测失败（如 file:// 直开页面）时保留播放器原样，

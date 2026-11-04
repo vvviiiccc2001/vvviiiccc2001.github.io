@@ -7,12 +7,14 @@
 
 :root{
   --paper:#fafaf8;            /* 主底色 */
+  --paper-rgb:250,250,248;
   --ink:#0a0a0a;              /* 文字主色 */
   --grey-1:#f0f0ee;           /* 浅灰底（隔断区块用） */
   --grey-2:#d4d4d2;           /* 中灰分割线 */
   --grey-3:#737373;           /* 辅助文字 */
   --accent:#002FA7;           /* 克莱因蓝 IKB */
   --accent-on:#ffffff;
+  --figure-bg:#ffffff;        /* 白底图片容器 */
 
   --text-primary:#0a0a0a;
   --text-secondary:#525252;
@@ -40,6 +42,31 @@ body{
   line-height:1.65;
 }
 ::selection{background:var(--accent);color:var(--accent-on)}
+
+/* ═════════════════════════════════════════════════════════════
+   暗色模式：html.dark 覆盖调色板（按钮切换 + localStorage 记忆，默认浅色）
+══════════════════════════════════════════════════════════════ */
+html.dark{
+  --paper:#101010;
+  --paper-rgb:16,16,16;
+  --ink:#f0f0ee;
+  --grey-1:#181818;
+  --grey-2:#2c2c2c;
+  --grey-3:#8f8f8f;
+  --accent:#5B7BFF;           /* IKB 提亮版，暗底可读 */
+  --accent-on:#ffffff;
+  --text-primary:#f0f0ee;
+  --text-secondary:#b8b8b8;
+  --text-helper:#8f8f8f;
+  --border-subtle:#242424;
+  --border-strong:#4a4a4a;
+  --figure-bg:#161616;
+}
+html.dark .hero h1 .accent{border-bottom-color:var(--accent)}
+html.dark .card:hover{box-shadow:10px 10px 0 rgba(91,123,255,.18)}
+html.dark .lat-bar{background:linear-gradient(90deg,#3d55d6,#6C8CFF)}
+html.dark .mini-badges span{border-color:rgba(91,123,255,.5)}
+html.dark .u{text-decoration-color:var(--accent)}
 a{color:inherit;text-decoration:none}
 img,video{display:block;max-width:100%}
 code{font-family:var(--mono);font-size:.85em}
@@ -52,8 +79,33 @@ code{font-family:var(--mono);font-size:.85em}
   position:sticky;top:0;z-index:100;
   display:flex;align-items:center;gap:var(--sp-4);
   height:56px;padding:0 clamp(16px,4vw,48px);
-  background:rgba(250,250,248,.92);backdrop-filter:blur(8px);
+  background:rgba(var(--paper-rgb),.92);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--grey-2);
+}
+/* 主题切换按钮：圆形，半月/太阳纯 CSS 图形 */
+.theme-btn{
+  margin-left:8px;width:32px;height:32px;
+  border:1px solid var(--grey-2);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border-radius:50%;flex:none;
+  transition:border-color .15s;
+}
+.theme-btn:hover{border-color:var(--accent)}
+.theme-icon{
+  position:relative;width:14px;height:14px;border-radius:50%;
+  background:var(--ink);
+  transition:transform .35s var(--ease-exp),box-shadow .35s;
+  box-shadow:inset -4px 0 0 0 transparent;
+}
+html.dark .theme-icon{
+  background:transparent;
+  border:2px solid var(--ink);
+  transform:rotate(-25deg) scale(.9);
+}
+html:not(.dark) .theme-icon{
+  box-shadow:2px -2px 0 0 var(--ink) inset;  /* 月牙缺角 */
+  clip-path:circle(7px at 30% 30%);
+  background:var(--ink);
 }
 .nav-logo{
   font-family:var(--mono);font-weight:700;font-size:20px;letter-spacing:-.5px;
@@ -310,6 +362,27 @@ code{font-family:var(--mono);font-size:.85em}
   .tl-item{grid-template-columns:1fr;gap:6px}
   .tl-when{padding-top:0}
   .sec-en{display:none}
+  /* 手机端视频墙：三联 / 四联改横向滑动（scroll-snap），格子更大更好看 */
+  .card-wide .card-media.trio,
+  .card-media.quad{
+    display:flex;gap:10px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    padding:12px 16px 16px;
+    scrollbar-width:none;
+  }
+  .card-wide .card-media.trio::-webkit-scrollbar,
+  .card-media.quad::-webkit-scrollbar{display:none}
+  .card-wide .card-media.trio .media-cell,
+  .card-media.quad .media-cell{
+    flex:0 0 82%;
+    aspect-ratio:16/10;
+    scroll-snap-align:center;
+  }
+  /* 多模型行窄屏：模型名与指标上下两行，避免挤压 */
+  .model-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .model-row span{text-align:left}
 }
 
 /* ═════════════════════════════════════════════════════════════
@@ -406,7 +479,7 @@ code{font-family:var(--mono);font-size:.85em}
   padding:6px 2px 0;line-height:1.6;
 }
 .card-media.figure-media{
-  aspect-ratio:auto;background:#fff;
+  aspect-ratio:auto;background:var(--figure-bg);
   border-bottom:1px solid var(--border-subtle);
 }
 .card-media.figure-media img{width:100%;height:auto}
