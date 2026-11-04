@@ -753,6 +753,10 @@ html:not(.dark) .theme-icon{
   .latency-row{grid-template-columns:64px 1fr 84px;gap:6px}
 }
 
+/* 手机端：去掉导航毛玻璃（GPU 合成省一块），纯色底 */
+@media (max-width:640px){
+  .nav{backdrop-filter:none;background:rgba(var(--paper-rgb),1)}
+
 /* 手机端 G.2 图案卡：上下留白加大（置于文件末尾确保覆盖前面的基础规则） */
 @media (max-width:640px){
   .card-media.accel.light .accel-inner{padding:26px 20px 28px;gap:18px}

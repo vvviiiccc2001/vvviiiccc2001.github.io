@@ -142,21 +142,49 @@
     });
 
     if (!("IntersectionObserver" in window) || !loops.length) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        var v = en.target;
-        if (en.isIntersecting) {
+
+    /* 手机端限制同时播放数量：多个视频同时硬解是发热情主因。
+       窄屏或触摸设备最多同时播 2 个（按可见比例挑），桌面不限。 */
+    var MAX_PLAYING =
+      (matchMedia("(max-width:640px)").matches || matchMedia("(pointer:coarse)").matches)
+        ? 2 : Infinity;
+
+    var ratios = new Map();   // video -> intersectionRatio
+    function schedule() {
+      var visible = loops
+        .filter(function (v) { return (ratios.get(v) || 0) > 0.25; })
+        .sort(function (a, b) { return (ratios.get(b) || 0) - (ratios.get(a) || 0); });
+      visible.forEach(function (v, i) {
+        if (i < MAX_PLAYING) {
           var p = v.play();
           if (p && p.catch) p.catch(function () {});
         } else {
-          v.pause();
+          v.pause();   // 超出配额：停在当前帧，省解码
         }
       });
-    }, { threshold: 0.25 });
+      loops.forEach(function (v) {
+        if ((ratios.get(v) || 0) <= 0.25) v.pause();
+      });
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        ratios.set(en.target, en.isIntersecting ? en.intersectionRatio : 0);
+      });
+      schedule();
+    }, { threshold: [0, 0.25, 0.5] });
     loops.forEach(function (v) { io.observe(v); });
 
+    /* 启动期复查：浏览器 autoplay 是渐进启动的，IO 初次回调可能跑在
+       视频真正开播之前（pause 无效果），前 3 秒多复查几轮兜住配额 */
+    var sweeps = 0;
+    var bootTimer = setInterval(function () {
+      schedule();
+      if (++sweeps >= 8) clearInterval(bootTimer);
+    }, 400);
+
     /* 首次用户交互后重试播放当前可见的循环视频
-       （解决 iOS 低电量模式 autoplay 被拒导致"卡在第一帧"） */
+       （解决 iOS 低电量模式 autoplay 被拒导致"卡在第一帧"；
+       交互解锁 = 全屏视频，不受移动端配额限制） */
     var unlocked = false;
     function retryVisible() {
       if (unlocked) return;
