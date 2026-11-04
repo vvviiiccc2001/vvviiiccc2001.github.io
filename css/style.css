@@ -587,7 +587,8 @@ html:not(.dark) .theme-icon{
 /* ── GIF 并排（研究演示）── */
 .card-media.gifpair{display:grid;grid-template-columns:1fr 1fr;background:var(--ink)}
 .card-media.gifpair figure{position:relative;margin:0;overflow:hidden}
-.card-media.gifpair img{width:100%;height:100%;object-fit:cover}
+.card-media.gifpair img,
+.card-media.gifpair video{width:100%;height:100%;object-fit:cover}
 .card-media.gifpair figcaption{
   position:absolute;left:8px;bottom:8px;
   font-family:var(--mono);font-size:10.5px;color:#d4d4d2;

@@ -126,10 +126,21 @@
   });
 
   /* ── 3b. 视窗内播放：滚出视口的循环视频自动暂停，滚回继续 ──
-     只管理 autoplay 循环视频，手动播放的视频不受影响；
-     大幅降低多视频页面的带宽与耗电。 */
+     手机端健壮性处理：
+     · ended 手动循环兜底（部分 WebKit 的 loop 属性不可靠）
+     · iOS 低电量模式下 autoplay 会被拒 → 首次触摸/点击后统一重试播放可见视频 */
   (function () {
     var loops = Array.prototype.slice.call(document.querySelectorAll("video[autoplay]"));
+
+    /* loop 属性兜底：ended 时手动回起点续播 */
+    loops.forEach(function (v) {
+      v.addEventListener("ended", function () {
+        try { v.currentTime = 0; } catch (e) {}
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+      });
+    });
+
     if (!("IntersectionObserver" in window) || !loops.length) return;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
@@ -143,6 +154,27 @@
       });
     }, { threshold: 0.25 });
     loops.forEach(function (v) { io.observe(v); });
+
+    /* 首次用户交互后重试播放当前可见的循环视频
+       （解决 iOS 低电量模式 autoplay 被拒导致"卡在第一帧"） */
+    var unlocked = false;
+    function retryVisible() {
+      if (unlocked) return;
+      unlocked = true;
+      loops.forEach(function (v) {
+        var r = v.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < innerHeight) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+      });
+      ["touchend", "pointerdown", "click"].forEach(function (ev) {
+        document.removeEventListener(ev, retryVisible);
+      });
+    }
+    ["touchend", "pointerdown", "click"].forEach(function (ev) {
+      document.addEventListener(ev, retryVisible, { once: false, passive: true });
+    });
   })();
 
   /* ── 4. 图片灯箱（点击放大 · 拖动 · 缩放）────────── */
