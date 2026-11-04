@@ -653,7 +653,10 @@ html:not(.dark) .theme-icon{
 @keyframes flow{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 5px);opacity:0}}
 
 /* ── G.2 白底图案卡（标题入图，无正文）── */
-.card-media.accel.light{background:var(--paper);border-top:1px solid var(--border-subtle);display:flex}
+.card-media.accel.light{
+  background:var(--paper);border-top:1px solid var(--border-subtle);display:flex;
+  aspect-ratio:auto;overflow:visible;   /* 覆盖基础 accel 的 16:9+hidden：高度由内容决定，不裁切 */
+}
 .card-media.accel.light .accel-inner{padding:20px 20px 22px;gap:14px}
 .accel.light .accel-title{
   font-size:20px;font-weight:800;color:var(--ink);line-height:1.35;
