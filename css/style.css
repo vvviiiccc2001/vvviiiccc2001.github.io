@@ -450,7 +450,7 @@ html:not(.dark) .theme-icon{
 }
 .card-h .card-media video{
   width:100%;height:auto;aspect-ratio:4/3;   /* 视频源为 4:3 中央裁切版 */
-  object-fit:cover;background:#000;
+  object-fit:contain;background:#000;        /* contain：任何浏览器下完整画面，绝不裁切 */
   border:1px solid var(--grey-2);
 }
 .sac-media .phase-tracker{margin-top:10px;border:1px solid var(--grey-2)}
