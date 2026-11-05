@@ -557,7 +557,7 @@ html:not(.dark) .theme-icon{
 
 /* ── 打螺丝工序阶段追踪条（浅色版，无黑底框）── */
 .sac-media{display:flex;flex-direction:column}
-.sac-media video{flex:1;min-height:0}
+.sac-media video{flex:0 0 auto}   /* 高度交给 aspect-ratio，不再被 flex 压扁 */
 .phase-tracker{
   background:var(--grey-1);
   padding:12px 14px;

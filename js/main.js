@@ -164,7 +164,7 @@
        窄屏或触摸设备最多同时播 2 个（按可见比例挑），桌面不限。 */
     var MAX_PLAYING =
       (matchMedia("(max-width:640px)").matches || matchMedia("(pointer:coarse)").matches)
-        ? 2 : Infinity;
+        ? 3 : Infinity;
 
     var ratios = new Map();   // video -> intersectionRatio
     function schedule() {
@@ -198,6 +198,25 @@
       schedule();
       if (++sweeps >= 8) clearInterval(bootTimer);
     }, 400);
+
+    /* 播放看门狗：兜住各种时序竞态（缓冲完成后停摆、调度与启动竞争等）——
+       每秒检查一次，视口内且非手动模式的循环视频若停着就重试播放；
+       有用户翻页交互后（30s 无交互）自动退避，避免打扰阅读 */
+    var lastActive = Date.now();
+    ["pointerdown", "touchstart", "scroll", "keydown"].forEach(function (ev) {
+      document.addEventListener(ev, function () { lastActive = Date.now(); }, { passive: true });
+    });
+    setInterval(function () {
+      if (Date.now() - lastActive > 15000) return;   // 用户离开页面：不再折腾
+      loops.forEach(function (v) {
+        if (isManual(v) || !v.paused) return;
+        var r = v.getBoundingClientRect();
+        if (r.bottom > innerHeight * 0.3 && r.top < innerHeight * 0.7) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+      });
+    }, 1000);
 
     /* 首次用户交互后重试播放当前可见的循环视频
        （解决 iOS 低电量模式 autoplay 被拒导致"卡在第一帧"；
