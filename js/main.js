@@ -13,6 +13,11 @@
 (function () {
   "use strict";
 
+  /* 兼容旧 iOS Safari：NodeList.forEach polyfill（缺失时全站功能块会连坐报错） */
+  if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+  }
+
   var __diag = [];
   function safe(name, fn) {
     try { fn(); __diag.push("✓ " + name); } catch (e) {
