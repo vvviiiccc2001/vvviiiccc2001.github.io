@@ -328,6 +328,19 @@
     lines.push("found: " + !!tr + " | children: " + (tr ? tr.children.length : "-"));
     lines.push("nowText: " + (tr && tr.querySelector(".phase-now") ? tr.querySelector(".phase-now").textContent : "(无)"));
     lines.push("videoPaused: " + (function(){ var v=document.querySelector("video"); return v?v.paused:"-"; })());
+    if (tr) {
+      var r = tr.getBoundingClientRect();
+      var cs = getComputedStyle(tr);
+      var bar = tr.querySelector(".phase-bar");
+      var br = bar ? bar.getBoundingClientRect() : null;
+      lines.push("rect: " + Math.round(r.width) + "x" + Math.round(r.height) + " @top " + Math.round(r.top) + " (scrollY " + Math.round(scrollY) + ")");
+      lines.push("css: display=" + cs.display + " vis=" + cs.visibility + " bg=" + cs.backgroundColor + " color=" + cs.color);
+      lines.push("bar: " + (br ? Math.round(br.width) + "x" + Math.round(br.height) + " lis=" + bar.children.length : "none"));
+      var media = tr.closest(".card-media");
+      var mr = media ? media.getBoundingClientRect() : null;
+      var vid = media ? media.querySelector("video") : null;
+      lines.push("media: " + (mr ? Math.round(mr.width) + "x" + Math.round(mr.height) : "-") + " | video: " + (vid ? Math.round(vid.getBoundingClientRect().height) + "px" : "-"));
+    }
     panel.textContent = lines.join("\n");
     document.body.appendChild(panel);
   });
