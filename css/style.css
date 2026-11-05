@@ -447,6 +447,7 @@ html:not(.dark) .theme-icon{
   aspect-ratio:auto;border-top:1px solid var(--border-subtle);
   padding:16px 16px 0;
   background:transparent;   /* 覆盖默认黑底：padding 留白区不露黑 */
+  overflow:visible;         /* 关键：覆盖基础规则的 hidden——iOS 上高度计算偏矮时会把视频下半截和追踪条裁掉 */
 }
 .card-h .card-media video{
   width:100%;height:auto;aspect-ratio:4/3;   /* 视频源为 4:3 中央裁切版 */
