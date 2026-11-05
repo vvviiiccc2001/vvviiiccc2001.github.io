@@ -13,8 +13,10 @@
 (function () {
   "use strict";
 
+  var __diag = [];
   function safe(name, fn) {
-    try { fn(); } catch (e) {
+    try { fn(); __diag.push("✓ " + name); } catch (e) {
+      __diag.push("✗ " + name + " :: " + (e && e.message));
       try { console.warn("[main] " + name + " 块失败:", e); } catch (e2) {}
     }
   }
@@ -303,5 +305,25 @@
     }, { passive: false });
 
     img.addEventListener("dblclick", reset);
+  });
+
+  /* ── 9. 诊断面板（?debug=1 时显示，帮助定位特定设备问题）── */
+  safe("debug-panel", function () {
+    if (!/[?&]debug=1/.test(location.search)) return;
+    var tr = document.querySelector(".phase-tracker");
+    var panel = document.createElement("pre");
+    panel.style.cssText =
+      "position:fixed;left:0;right:0;bottom:0;z-index:999;max-height:45vh;overflow:auto;" +
+      "background:#000;color:#0f0;font:11px/1.6 monospace;padding:12px;white-space:pre-wrap;margin:0";
+    var lines = __diag.slice();
+    lines.push("── 环境 ──");
+    lines.push("UA: " + navigator.userAgent);
+    lines.push("viewport: " + innerWidth + "x" + innerHeight);
+    lines.push("── 追踪条 ──");
+    lines.push("found: " + !!tr + " | children: " + (tr ? tr.children.length : "-"));
+    lines.push("nowText: " + (tr && tr.querySelector(".phase-now") ? tr.querySelector(".phase-now").textContent : "(无)"));
+    lines.push("videoPaused: " + (function(){ var v=document.querySelector("video"); return v?v.paused:"-"; })());
+    panel.textContent = lines.join("\n");
+    document.body.appendChild(panel);
   });
 })();
