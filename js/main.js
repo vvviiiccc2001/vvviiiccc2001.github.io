@@ -80,6 +80,12 @@
       }
       video.addEventListener("timeupdate", update);
       video.addEventListener("seeked", update);
+      video.addEventListener("loadedmetadata", update);
+      video.addEventListener("play", update);
+      /* 轮询兜底：部分移动端事件丢失时，只要视频在播也能刷新（页面不可见时暂停轮询省电） */
+      setInterval(function () {
+        if (!video.paused && !document.hidden) update();
+      }, 500);
       update();
     });
   });
