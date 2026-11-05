@@ -457,9 +457,11 @@ html:not(.dark) .theme-icon{
 .sac-media .phase-tracker{margin-top:10px;border:1px solid var(--grey-2)}
 .card-h .card-body{border-left:1px solid var(--border-subtle)}
 @media (max-width:900px){
-  .card-h{grid-template-columns:1fr}
-  .card-h .card-media{aspect-ratio:16/9}
+  /* iOS Safari 的 grid auto 行高 bug 会漏算追踪条高度导致重叠：手机端改 block 流式布局 */
+  .card-h{display:block}
+  .card-h .card-media{aspect-ratio:auto}
   .card-h .card-body{border-left:none;border-top:1px solid var(--border-subtle)}
+  .card-h .figure-strip.calib-wide{width:auto}
 }
 
 /* ── 遥操四联视频（上肢×2 + 手部×2，静音自动循环，2×2 大格）── */
