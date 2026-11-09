@@ -9,7 +9,7 @@
 <meta property="og:description" content="遥操数采系统 · VLA 后训练 · 模型量化与端侧推理部署 · 机器人实机项目交付">
 <meta property="og:image" content="assets/img/headshot.jpeg">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="stylesheet" href="css/style.css?v=16">
+<link rel="stylesheet" href="css/style.css?v=17">
 </head>
 <body>
 <noscript><p style="position:fixed;top:0;left:0;right:0;z-index:999;background:#c00;color:#fff;padding:10px;text-align:center;font-size:14px;margin:0">⚠ 此浏览器未执行 JavaScript——视频循环、阶段追踪等功能不可用</p></noscript>
@@ -197,6 +197,12 @@
             <li>Mid-training 与 Post-training</li>
             <li>Joint + relative EEF</li>
             <li>大小人形泛化与场景泛化</li>
+            <li>未见类别可抓取 · 换场景仍能定位</li>
+          </ul>
+          <ul class="metrics">
+            <li><b>95%</b><span>组合泛化（旧物体 + 新容器）</span></li>
+            <li><b>15+</b><span>S0–S3 评测任务</span></li>
+            <li><b>2</b><span>人形平台验证</span></li>
           </ul>
         </div>
       </article>
@@ -212,6 +218,7 @@
             <li>关节状态识别无效动作 · 清洗脏帧</li>
             <li>下采样执行，提速约 <span class="hl">1.3×</span>，保留 Regrasp 与跟随能力</li>
             <li>VLM 塔新增 Progress Head</li>
+            <li>长程链路成功率 <span class="hl">95%+</span> · 递水耗时 <span class="hl">↓60%</span></li>
           </ul>
         </div>
       </article>
@@ -240,10 +247,11 @@
         <div class="card-body">
           <h3>工业装配与在线 RL <span class="card-en">Assembly + Online RL</span></h3>
           <ul class="point-list">
-            <li>状态机与执行 Pipeline</li>
+            <li>状态机与执行 Pipeline（rule-based + model-based 融合）</li>
             <li>外参标定：±1 cm / ±2° 误差</li>
-            <li>基于 <b>HIL-SERL</b> 框架做 SAC 强化学习</li>
-            <li>Reward classifier 判定任务成功</li>
+            <li>ResNet + MLP 示教 SFT → <b>HIL-SERL</b> 框架 SAC 在线 RL</li>
+            <li>Reward classifier 判定任务成功 · 安全回退</li>
+            <li><span class="hl">6 孔对准-插入-拧紧全闭环</span>展会交付</li>
           </ul>
         </div>
         <figure class="figure-strip calib-wide">
@@ -283,7 +291,7 @@
               <div class="lat-track"><div class="lat-bar" style="--to:48%;animation-delay:.25s"></div></div>
               <span class="lat-val">≈90 ms²</span>
             </div>
-            <div class="accel-foot">混合精度 / 敏感算子回退 / CUDA Graph / Prefix KV Cache</div>
+            <div class="accel-foot">混合精度 / 敏感算子回退 / CUDA Graph / Prefix KV Cache · 较 4090 端提速 20%+</div>
           </div>
         </div>
       </article>
@@ -388,10 +396,14 @@
         </div>
         <div class="card-body">
           <h3>异构 / 同构外骨骼 &amp; 数采遥操 <span class="card-en">Exoskeleton Teleop &amp; Data Collection</span></h3>
+          <ul class="point-list">
+            <li>同构直驱 + 异构重定向 · <b>6/12 DoF 手部解算</b></li>
+            <li>Dora 框架接入外骨骼 / Manus / Vive / Quest / <b>Vision Pro</b></li>
+            <li>机械臂平台<b>力控数采</b>：擦桌 / 钻孔等力控任务</li>
+          </ul>
           <ul class="metrics">
-            <li><b>6/12 DoF</b><span>手部动作解算</span></li>
             <li><b>2</b><span>外骨骼形态（同构 / 异构）</span></li>
-            <li><b>4</b><span>外骨骼 / VR / 动捕设备接入遥操数采</span></li>
+            <li><b>5</b><span>遥操设备接入</span></li>
           </ul>
         </div>
       </article>
@@ -491,11 +503,11 @@
     <a href="https://github.com/vvviiiccc2001" target="_blank" rel="noopener">github.com/vvviiiccc2001 ↗</a>
     <a href="assets/docs/victor-resume.pdf" target="_blank">简历 PDF ↗</a>
   </div>
-  <p class="footer-meta">© <span data-year>2026</span> Victor · 上海 · 更新于 <span data-updated>2026.11</span> · BUILD v16</p>
+  <p class="footer-meta">© <span data-year>2026</span> Victor · 上海 · 更新于 <span data-updated>2026.11</span> · BUILD v17</p>
 </footer>
 
 </main>
 
-<script src="js/main.js?v=16"></script>
+<script src="js/main.js?v=17"></script>
 </body>
 </html>
